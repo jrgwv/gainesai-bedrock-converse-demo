@@ -128,8 +128,8 @@ def route_model(task_type: str) -> str:
         "reasoning":      "us.anthropic.claude-opus-4-8",
         "coding":         "us.anthropic.claude-opus-4-8",
         "analysis":       "us.anthropic.claude-opus-4-8",
-        "summarization":  "us.anthropic.claude-haiku-4-5-20251001",
-        "classification": "us.anthropic.claude-haiku-4-5-20251001",
+        "summarization":  "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "classification": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
     }
     return routing.get(task_type, "us.anthropic.claude-opus-4-8")
 
@@ -196,7 +196,7 @@ def converse_with_fallback(text: str, primary: str, fallback: str) -> dict:
 result = converse_with_fallback(
     text="Explain cross-region replication latency tradeoffs.",
     primary="us.anthropic.claude-opus-4-8",
-    fallback="us.anthropic.claude-haiku-4-5-20251001",
+    fallback="us.anthropic.claude-haiku-4-5-20251001-v1:0",
 )
 print(f"Served by: {result['model_id']} (fallback={result['fallback_used']})")
 ```

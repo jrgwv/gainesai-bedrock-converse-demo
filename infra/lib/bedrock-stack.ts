@@ -126,7 +126,7 @@ export class BedrockStack extends cdk.Stack {
     // profile ARN and the underlying foundation-model ARNs the profile fans
     // out to in each region.
     const primaryModel = "anthropic.claude-opus-4-8";
-    const fallbackModel = "anthropic.claude-haiku-4-5-20251001";
+    const fallbackModel = "anthropic.claude-haiku-4-5-20251001-v1:0";
 
     fn.addToRolePolicy(
       new iam.PolicyStatement({
@@ -212,7 +212,7 @@ export class BedrockStack extends cdk.Stack {
             "gainsAI/BedrockConverse namespace only.",
           appliesTo: [
             "Resource::arn:aws:bedrock:*::foundation-model/anthropic.claude-opus-4-8",
-            "Resource::arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001",
+            "Resource::arn:aws:bedrock:*::foundation-model/anthropic.claude-haiku-4-5-20251001-v1:0",
             "Resource::*",
           ],
         },
