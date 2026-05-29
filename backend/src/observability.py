@@ -6,6 +6,8 @@ Register `log_event` and/or `emit_cloudwatch_metrics` as observers on BedrockCon
 import json
 import logging
 from datetime import UTC, datetime
+from functools import lru_cache
+from typing import Any
 
 import boto3
 
@@ -14,6 +16,12 @@ from bedrock_client import ObservabilityEvent
 logger = logging.getLogger(__name__)
 
 NAMESPACE = "gainsAI/BedrockConverse"
+
+
+@lru_cache(maxsize=1)
+def _cloudwatch_client() -> Any:
+    """Return a cached CloudWatch client. Reused across Lambda warm invocations."""
+    return boto3.client("cloudwatch")
 
 
 def log_event(event: ObservabilityEvent) -> None:
@@ -38,7 +46,7 @@ def emit_cloudwatch_metrics(event: ObservabilityEvent) -> None:
     Push custom metrics to CloudWatch.
     In Lambda, prefer EMF (aws_embedded_metrics) instead for lower overhead.
     """
-    cw = boto3.client("cloudwatch")
+    cw = _cloudwatch_client()
     dimensions = [
         {"Name": "ModelId", "Value": event.model_id},
         {"Name": "TaskType", "Value": event.task_type},
