@@ -1,0 +1,707 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\ftech\fcharset77 Symbol;\f2\fmodern\fcharset0 Courier;
+\f3\fnil\fcharset0 Menlo-Regular;\f4\fmodern\fcharset0 Courier-Bold;\f5\fmodern\fcharset0 Courier-Oblique;
+}
+{\colortbl;\red255\green255\blue255;\red15\green55\blue78;\red0\green0\blue0;\red15\green112\blue1;
+\red19\green8\blue105;\red83\green83\blue83;\red50\green91\blue142;\red12\green95\blue24;\red79\green143\blue160;
+\red53\green145\blue93;\red171\green79\blue117;\red173\green103\blue5;}
+{\*\expandedcolortbl;;\cssrgb\c5882\c27843\c38039;\cssrgb\c0\c0\c0;\cssrgb\c0\c50196\c0;
+\cssrgb\c9804\c9020\c48627;\cssrgb\c40000\c40000\c40000;\cssrgb\c25098\c43922\c62745;\cssrgb\c0\c43922\c12549;\cssrgb\c37647\c62745\c69020;
+\cssrgb\c25098\c62745\c43922;\cssrgb\c73333\c40000\c53333;\cssrgb\c73725\c47843\c0;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid1\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid101\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid201\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid3}
+{\list\listtemplateid4\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid301\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid4}
+{\list\listtemplateid5\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid401\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid5}
+{\list\listtemplateid6\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid501\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid6}
+{\list\listtemplateid7\listhybrid{\listlevel\levelnfc23\levelnfcn23\leveljc0\leveljcn0\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{disc\}}{\leveltext\leveltemplateid601\'01\uc0\u8226 ;}{\levelnumbers;}\fi-360\li720\lin720 }{\listname ;}\listid7}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}{\listoverride\listid4\listoverridecount0\ls4}{\listoverride\listid5\listoverridecount0\ls5}{\listoverride\listid6\listoverridecount0\ls6}{\listoverride\listid7\listoverridecount0\ls7}}
+\paperw12240\paperh14240\margl1440\margr1440
+\deftab720
+\pard\pardeftab720\sa180\partightenfactor0
+
+\f0\fs40 \cf2 \up0 \nosupersub \ulnone Multi-model orchestration in Amazon Bedrock Converse API\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 The AI industry has a continuous pipeline of models in various stages of development and release. As one frontier model gains adoption, another is already approaching launch with new capabilities, different tradeoffs, and fresh evaluation benchmarks.\
+This creates a challenge for enterprise teams. The problem is not deciding whether a new model is better than the last one. The problem is building applications so tightly coupled to today\'92s model that adopting tomorrow\'92s requires a rewrite.\
+Organizations that realize the most value from AI will not necessarily be the ones that pick the right model first. They will be the ones that build reusable architectures that can accommodate changes in models, requirements, and business priorities without repeated redesign efforts.\
+The Amazon Bedrock Converse API addresses this directly. Rather than building application logic around a single model, developers can use a consistent interface across multiple foundation models, allowing routing, observability, and governance patterns to remain stable as models change.\
+In this post, I will use Claude Opus 4.8 as the implementation example to demonstrate how to build a multi-model architecture on AWS that reduces lock-in, simplifies model evaluation, supports intelligent model routing, and turns future model upgrades into a configuration change instead of an engineering project.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Why multi-model architecture matters on AWS\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Most teams do not realize they are creating model lock-in until it becomes expensive.\
+The first implementation works. The proof of concept succeeds. Then a new model appears with better reasoning, lower latency, or a more attractive pricing structure. Suddenly application code, prompt formatting, SDK integrations, and evaluation tooling all need updates.\
+The most common challenges include:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls1\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Model coupling through provider-specific APIs\
+\ls1\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Evaluation lock-in that prevents meaningful A/B testing\
+\ls1\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Operational risk when a model is deprecated or unavailable\
+\ls1\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Fragmented observability across providers\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa180\partightenfactor0
+\ls1\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Difficulty controlling cost and latency across workloads\
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 The solution is not continuously switching models. The solution is introducing a routing and abstraction layer early.\
+This is the same architectural principle that drove API gateways, container orchestration, and cloud-native platforms. Decouple the implementation from the interface.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 What the Bedrock Converse API solves\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 The Amazon Bedrock Converse API provides a standardized interface for interacting with multiple foundation models through a single request format.\
+Instead of writing separate integrations for Claude, Llama, Mistral, and future models, developers can use a common API structure that standardizes:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls2\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Request payloads\
+\ls2\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Conversation history\
+\ls2\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Inference configuration\
+\ls2\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Tool use patterns\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa180\partightenfactor0
+\ls2\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Response structures\
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 One implementation pattern for a multi-model architecture on AWS is shown below:\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f2\fs22 \cf3 Client
+\f0\fs24 \uc0\u8232 
+\f2\fs22   
+\f3 \uc0\u8594 
+\f2  API Gateway
+\f0\fs24 \uc0\u8232 
+\f2\fs22   
+\f3 \uc0\u8594 
+\f2  Lambda or FastAPI service
+\f0\fs24 \uc0\u8232 
+\f2\fs22   
+\f3 \uc0\u8594 
+\f2  Amazon Bedrock Converse API
+\f0\fs24 \uc0\u8232 
+\f2\fs22   
+\f3 \uc0\u8594 
+\f2  Claude Opus 4.8 | fallback model | task-specific model
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 The architectural advantage is straightforward:\
+Your application code does not change when your model selection changes.\
+The model identifier changes. The surrounding orchestration does not.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Prerequisites\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 To follow the examples in this post, you need:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls3\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone An AWS account with access to Amazon Bedrock\
+\ls3\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Model access enabled for the models you want to test\
+\ls3\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Python 3.10 or later\
+\ls3\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Boto3 installed locally\
+\ls3\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone AWS credentials configured for your environment\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa180\partightenfactor0
+\ls3\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone IAM permissions to call Amazon Bedrock Runtime APIs\
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 Install the required Python packages:\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f2\fs22 \cf3 pip install boto3 botocore
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 Set the AWS Region and model identifiers as environment variables:\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f2\fs22 \cf4 export\cf3  \cf5 AWS_REGION\cf6 =\cf7 "us-east-1"
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22 \cf4 export\cf3  \cf5 PRIMARY_MODEL_ID\cf6 =\cf7 "us.anthropic.claude-opus-4-8"
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22 \cf4 export\cf3  \cf5 FALLBACK_MODEL_ID\cf6 =\cf7 "your-fallback-model-id"
+\f0\fs24 \cf3 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 Use the model ID or inference profile ID that is enabled in your AWS account and supported in your selected Region.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Using Claude Opus 4.8 as the primary model\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 For this walkthrough, Claude Opus 4.8 is used as the primary model for complex reasoning workloads.\
+The model selection is not the main architectural decision. The important decision is where the model selection happens. In this pattern, application teams do not call a specific model directly. They call a routing layer that selects a model based on workload type, cost profile, latency requirements, or fallback behavior.\
+That makes Claude Opus 4.8 a concrete implementation example, not a hard dependency in the application architecture.\
+This pattern applies to workloads such as:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls4\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Multi-stage autonomous agent workflows\
+\ls4\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Earnings call analysis\
+\ls4\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Regulatory document review\
+\ls4\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Threat intelligence investigations\
+\ls4\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Literature reviews in life sciences\
+\ls4\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Enterprise knowledge management systems\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa180\partightenfactor0
+\ls4\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Code analysis and technical planning\
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 The value comes from the architecture: you can evaluate and replace the model without redesigning the surrounding platform.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Amazon Bedrock Converse API example\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 The Converse API standardizes interactions across models, making implementation easier to reuse across workloads.\
+The following helper creates a Bedrock Runtime client and reads model settings from environment variables.\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f4\b\fs22 \cf4 import
+\f2\b0 \cf3  os
+\f0\fs24 \uc0\u8232 \u8232 
+\f4\b\fs22 \cf4 import
+\f2\b0 \cf3  boto3
+\f0\fs24 \uc0\u8232 
+\f4\b\fs22 \cf4 from
+\f2\b0 \cf3  botocore.exceptions 
+\f4\b \cf4 import
+\f2\b0 \cf3  ClientError
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22 AWS_REGION \cf6 =\cf3  os.getenv(\cf7 "AWS_REGION"\cf3 , \cf7 "us-east-1"\cf3 )
+\f0\fs24 \uc0\u8232 
+\f2\fs22 PRIMARY_MODEL_ID \cf6 =\cf3  os.environ[\cf7 "PRIMARY_MODEL_ID"\cf3 ]
+\f0\fs24 \uc0\u8232 
+\f2\fs22 FALLBACK_MODEL_ID \cf6 =\cf3  os.environ[\cf7 "FALLBACK_MODEL_ID"\cf3 ]
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22 bedrock \cf6 =\cf3  boto3.client(\cf7 "bedrock-runtime"\cf3 , region_name\cf6 =\cf3 AWS_REGION)
+\f0\fs24 \uc0\u8232 \u8232 \u8232 
+\f4\b\fs22 \cf8 def
+\f2\b0 \cf3  extract_text(response: \cf4 dict\cf3 ) \cf6 ->\cf3  \cf4 str\cf3 :
+\f0\fs24 \uc0\u8232 
+\f2\fs22     
+\f5\i \cf9 """Extract the first text response from a Converse API response."""
+\f0\i0\fs24 \cf3 \uc0\u8232 
+\f2\fs22     
+\f4\b \cf8 return
+\f2\b0 \cf3  response[\cf7 "output"\cf3 ][\cf7 "message"\cf3 ][\cf7 "content"\cf3 ][\cf10 0\cf3 ][\cf7 "text"\cf3 ]
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Single-turn inference\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 A basic Converse API request uses a consistent message structure regardless of the underlying model.\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f2\fs22 \cf3 response \cf6 =\cf3  bedrock.converse(
+\f0\fs24 \uc0\u8232 
+\f2\fs22     modelId\cf6 =\cf3 PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     messages\cf6 =\cf3 [
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \cf7 "role"\cf3 : \cf7 "user"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \cf7 "content"\cf3 : [
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                     \cf7 "text"\cf3 : \cf7 "What are the key tradeoffs between synchronous and asynchronous Lambda invocation?"
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22                 \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22             ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22     ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22     inferenceConfig\cf6 =\cf3 \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "maxTokens"\cf3 : \cf10 1024\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "temperature"\cf3 : \cf10 0.3\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22 )
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22 \cf4 print\cf3 (extract_text(response))
+\f0\fs24 \uc0\u8232 
+\f2\fs22 \cf4 print\cf3 (
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf11 f"Tokens \'97 input: \cf7 \{\cf3 response[\cf7 'usage'\cf3 ][\cf7 'inputTokens'\cf3 ]\cf7 \}\cf11 , "
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22     \cf11 f"output: \cf7 \{\cf3 response[\cf7 'usage'\cf3 ][\cf7 'outputTokens'\cf3 ]\cf7 \}\cf11 "
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22 )
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 This example sends one user message to the primary model and prints both the generated response and token usage. Token usage is useful for cost tracking, monitoring, and evaluation pipelines.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Multi-turn conversations\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Conversation state is represented as a message array. To continue a conversation, append the previous user and assistant messages and pass the full array back to the Converse API.\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f2\fs22 \cf3 conversation \cf6 =\cf3  [
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "role"\cf3 : \cf7 "user"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "content"\cf3 : [
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "text"\cf3 : \cf7 "I am designing a RAG pipeline on AWS. Where should I start?"
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22             \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22         ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "role"\cf3 : \cf7 "assistant"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "content"\cf3 : [
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "text"\cf3 : \cf7 "Start with your retrieval strategy. Are you using structured or unstructured data?"
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22             \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22         ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "role"\cf3 : \cf7 "user"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "content"\cf3 : [
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "text"\cf3 : \cf7 "Unstructured data, mainly PDFs and internal wikis."
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22             \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22         ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22 ]
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22 response \cf6 =\cf3  bedrock.converse(
+\f0\fs24 \uc0\u8232 
+\f2\fs22     modelId\cf6 =\cf3 PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     messages\cf6 =\cf3 conversation,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     system\cf6 =\cf3 [
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \cf7 "text"\cf3 : \cf7 "You are an AWS solutions architect. Provide concise, practical guidance."
+\f0\fs24 \cf3 \uc0\u8232 
+\f2\fs22         \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22     ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22     inferenceConfig\cf6 =\cf3 \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "maxTokens"\cf3 : \cf10 2048\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "temperature"\cf3 : \cf10 0.4\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22 )
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22 \cf4 print\cf3 (extract_text(response))
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 The same message structure can be reused with another supported model by changing the model ID. That is the core benefit of keeping model selection outside the application workflow.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Model routing in Amazon Bedrock\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Model routing is one of the most practical patterns you can implement with the Converse API.\
+Instead of exposing model identifiers to application teams, classify requests by workload type:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls5\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Reasoning\
+\ls5\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Coding\
+\ls5\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Analysis\
+\ls5\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Summarization\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa180\partightenfactor0
+\ls5\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Classification\
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 The routing layer determines which model should process the request. This allows platform teams to balance quality, latency, and cost without changing application code.\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f4\b\fs22 \cf8 def
+\f2\b0 \cf3  route_model(task_type: \cf4 str\cf3 ) \cf6 ->\cf3  \cf4 str\cf3 :
+\f0\fs24 \uc0\u8232 
+\f2\fs22     routing_table \cf6 =\cf3  \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "reasoning"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "coding"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "analysis"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "summarization"\cf3 : FALLBACK_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "classification"\cf3 : FALLBACK_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \}
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22     
+\f4\b \cf8 return
+\f2\b0 \cf3  routing_table.get(task_type, PRIMARY_MODEL_ID)
+\f0\fs24 \uc0\u8232 \u8232 \u8232 
+\f2\fs22 tasks \cf6 =\cf3  [
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "task_type"\cf3 : \cf7 "reasoning"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "text"\cf3 : \cf7 "Design a multi-region failover strategy for DynamoDB Global Tables."\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "task_type"\cf3 : \cf7 "summarization"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \cf7 "text"\cf3 : \cf7 "Summarize this in one sentence: AWS Lambda is a serverless compute service that runs code in response to events."\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22 ]
+\f0\fs24 \uc0\u8232 \u8232 
+\f4\b\fs22 \cf8 for
+\f2\b0 \cf3  task 
+\f4\b \cf8 in
+\f2\b0 \cf3  tasks:
+\f0\fs24 \uc0\u8232 
+\f2\fs22     model_id \cf6 =\cf3  route_model(task[\cf7 "task_type"\cf3 ])
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22     response \cf6 =\cf3  bedrock.converse(
+\f0\fs24 \uc0\u8232 
+\f2\fs22         modelId\cf6 =\cf3 model_id,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         messages\cf6 =\cf3 [
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "role"\cf3 : \cf7 "user"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "content"\cf3 : [\{\cf7 "text"\cf3 : task[\cf7 "text"\cf3 ]\}],
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22         ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22         inferenceConfig\cf6 =\cf3 \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \cf7 "maxTokens"\cf3 : \cf10 512\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \cf7 "temperature"\cf3 : \cf10 0.2\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22         \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22     )
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22     \cf4 print\cf3 (\cf11 f"[\cf7 \{\cf3 task[\cf7 'task_type'\cf3 ]\cf7 \}\cf11  -> \cf7 \{\cf3 model_id\cf7 \}\cf11 ]"\cf3 )
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf4 print\cf3 (extract_text(response))
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 In a production client, the routing table should be centralized and driven by configuration. That keeps model changes out of application code.\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f2\fs22 \cf3 ROUTING_TABLE: \cf4 dict\cf3 [\cf4 str\cf3 , \cf4 str\cf3 ] \cf6 =\cf3  \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf7 "reasoning"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf7 "coding"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf7 "analysis"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf7 "summarization"\cf3 : FALLBACK_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf7 "classification"\cf3 : FALLBACK_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     \cf7 "default"\cf3 : PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22 \}
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 With this structure, swapping model tiers becomes a configuration change instead of a code change.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Fallback patterns\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Production systems need resiliency.\
+When a primary model experiences throttling, timeout issues, or availability problems, the application can retry against a secondary model. The caller receives a response in the same format and can optionally inspect whether fallback was used.\
+\pard\pardeftab720\sa200\partightenfactor0
+
+\f4\b\fs22 \cf8 def
+\f2\b0 \cf3  converse_with_fallback(
+\f0\fs24 \uc0\u8232 
+\f2\fs22     text: \cf4 str\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     primary_model_id: \cf4 str\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     fallback_model_id: \cf4 str\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22 ) \cf6 ->\cf3  \cf4 dict\cf3 :
+\f0\fs24 \uc0\u8232 
+\f2\fs22     
+\f4\b \cf8 for
+\f2\b0 \cf3  model_id 
+\f4\b \cf8 in
+\f2\b0 \cf3  [primary_model_id, fallback_model_id]:
+\f0\fs24 \uc0\u8232 
+\f2\fs22         
+\f4\b \cf8 try
+\f2\b0 \cf3 :
+\f0\fs24 \uc0\u8232 
+\f2\fs22             response \cf6 =\cf3  bedrock.converse(
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 modelId\cf6 =\cf3 model_id,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 messages\cf6 =\cf3 [
+\f0\fs24 \uc0\u8232 
+\f2\fs22                     \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                         \cf7 "role"\cf3 : \cf7 "user"\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                         \cf7 "content"\cf3 : [\{\cf7 "text"\cf3 : text\}],
+\f0\fs24 \uc0\u8232 
+\f2\fs22                     \}
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 ],
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 inferenceConfig\cf6 =\cf3 \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                     \cf7 "maxTokens"\cf3 : \cf10 1024\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                     \cf7 "temperature"\cf3 : \cf10 0.3\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \},
+\f0\fs24 \uc0\u8232 
+\f2\fs22             )
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22             
+\f4\b \cf8 return
+\f2\b0 \cf3  \{
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "model_id"\cf3 : model_id,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "content"\cf3 : extract_text(response),
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "fallback_used"\cf3 : model_id \cf6 ==\cf3  fallback_model_id,
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 \cf7 "usage"\cf3 : response.get(\cf7 "usage"\cf3 , \{\}),
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \}
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22         
+\f4\b \cf8 except
+\f2\b0 \cf3  ClientError 
+\f4\b \cf4 as
+\f2\b0 \cf3  error:
+\f0\fs24 \uc0\u8232 
+\f2\fs22             
+\f4\b \cf8 if
+\f2\b0 \cf3  model_id \cf6 ==\cf3  fallback_model_id:
+\f0\fs24 \uc0\u8232 
+\f2\fs22                 
+\f4\b \cf8 raise
+\f0\b0\fs24 \cf3 \uc0\u8232 \u8232 
+\f2\fs22             error_code \cf6 =\cf3  error.response.get(\cf7 "Error"\cf3 , \{\}).get(\cf7 "Code"\cf3 , \cf7 "Unknown"\cf3 )
+\f0\fs24 \uc0\u8232 
+\f2\fs22             \cf4 print\cf3 (\cf11 f"Primary model failed with \cf7 \{\cf3 error_code\cf7 \}\cf11 . Trying fallback model."\cf3 )
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22     
+\f4\b \cf8 raise
+\f2\b0 \cf3  \cf12 RuntimeError\cf3 (\cf7 "No model returned a successful response."\cf3 )
+\f0\fs24 \uc0\u8232 \u8232 \u8232 
+\f2\fs22 result \cf6 =\cf3  converse_with_fallback(
+\f0\fs24 \uc0\u8232 
+\f2\fs22     text\cf6 =\cf7 "Explain cross-region replication latency tradeoffs for a production workload."\cf3 ,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     primary_model_id\cf6 =\cf3 PRIMARY_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22     fallback_model_id\cf6 =\cf3 FALLBACK_MODEL_ID,
+\f0\fs24 \uc0\u8232 
+\f2\fs22 )
+\f0\fs24 \uc0\u8232 \u8232 
+\f2\fs22 \cf4 print\cf3 (\cf11 f"Served by: \cf7 \{\cf3 result[\cf7 'model_id'\cf3 ]\cf7 \}\cf11 "\cf3 )
+\f0\fs24 \uc0\u8232 
+\f2\fs22 \cf4 print\cf3 (\cf11 f"Fallback used: \cf7 \{\cf3 result[\cf7 'fallback_used'\cf3 ]\cf7 \}\cf11 "\cf3 )
+\f0\fs24 \uc0\u8232 
+\f2\fs22 \cf4 print\cf3 (result[\cf7 "content"\cf3 ])
+\f0\fs24 \
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 This pattern improves service reliability while reducing operational risk. It also gives platform teams a clean way to track fallback usage over time.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Operational benefits for enterprise teams\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 This architecture provides measurable operational advantages beyond model portability.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs28 \cf2 Faster evaluation cycles\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 New models can be introduced behind feature flags and compared against existing workloads without redeploying applications.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs28 \cf2 Cost management\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Expensive reasoning tasks can use premium models while simpler workloads use lower-cost alternatives.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs28 \cf2 Improved resiliency\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Fallback routing reduces dependence on a single model provider or deployment.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs28 \cf2 Centralized governance\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 Content filtering, audit logging, observability, and PII controls can be implemented once and applied consistently.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs28 \cf2 Better observability\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 A unified routing layer creates a single place to measure:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls6\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Latency\
+\ls6\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Token consumption\
+\ls6\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Error rates\
+\ls6\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone User feedback\
+\ls6\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Model utilization\
+\ls6\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Fallback frequency\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa160\partightenfactor0
+\ls6\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Cost by task type\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Observability considerations\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 If you are building AI applications with Amazon Bedrock, observability should be part of the architecture from day one.\
+Track:\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa36\partightenfactor0
+\ls7\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone First-token latency\
+\ls7\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone End-to-end response time\
+\ls7\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Input and output tokens\
+\ls7\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Model selection distribution\
+\ls7\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Error rates\
+\ls7\ilvl0
+\f1 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Fallback usage\
+\pard\tx360\tx720\pardeftab720\li720\fi-720\sa180\partightenfactor0
+\ls7\ilvl0
+\f1 \cf3 \up0 \nosupersub \ulnone {\listtext	\uc0\u8226 	}
+\f0 \up0 \nosupersub \ulnone Human evaluation scores\
+\pard\pardeftab720\sa180\partightenfactor0
+\cf3 Services such as Amazon CloudWatch, AWS X-Ray, and custom evaluation pipelines provide the visibility needed to make informed routing decisions over time.\
+At a minimum, capture the selected model ID, task type, token usage, latency, and fallback status for each request. Those fields give you the operational data needed to compare models and decide when a new model is ready for production traffic.\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs32 \cf2 Conclusion\
+\pard\pardeftab720\sa180\partightenfactor0
+
+\fs24 \cf3 The core principle behind multi-model architecture is not which model you choose today. It is how easily you can change that decision tomorrow.\
+By standardizing interactions through the Amazon Bedrock Converse API, you decouple application logic from model implementations, simplify evaluation, improve resiliency, and create a platform that can evolve as new models become available.\
+Claude Opus 4.8 is a good fit for this pattern because complex reasoning and multi-stage agentic workflows benefit from routing, fallback handling, and evaluation flexibility. The architecture remains the main investment. Model routing, governance, observability, and fallback behavior continue to provide value regardless of which model ultimately processes the request.\
+If you are building AI applications with Amazon Bedrock, start with a simple abstraction layer, implement routing, and establish evaluation baselines. When a new model releases, your upgrade path becomes a configuration change rather than an engineering project.\
+For deeper guidance, review the [Amazon Bedrock documentation](https://docs.aws.amazon.com/bedrock/), the [Converse API examples](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference.html), and the [Claude Opus 4.8 announcement](https://aws.amazon.com/blogs/machine-learning/claude-opus-4-8-is-now-available-on-aws/). Then test multiple models behind a common interface and measure quality, latency, cost, and fallback behavior against your own workloads.}

@@ -1,145 +1,66 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="app.diagrams.net" modified="2026-05-29" version="24.0.0">
+<mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.1 Chrome/142.0.7444.265 Electron/39.8.0 Safari/537.36" version="29.6.1">
   <diagram id="bedrock-arch" name="Architecture">
-    <mxGraphModel dx="1300" dy="900" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1200" pageHeight="620" math="0" shadow="0">
+    <mxGraphModel dx="1412" dy="836" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1200" pageHeight="620" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-
-        <!-- ── TITLE ─────────────────────────────────────────────── -->
-        <mxCell id="title" value="Bedrock Converse API — Multi-Model Architecture"
-          style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#232F3E;"
-          vertex="1" parent="1">
-          <mxGeometry x="80" y="22" width="1040" height="36" as="geometry" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=18;fontStyle=1;fontColor=#232F3E;" value="Bedrock Converse API — Multi-Model Architecture" vertex="1">
+          <mxGeometry height="36" width="1040" x="80" y="22" as="geometry" />
         </mxCell>
-
-        <mxCell id="subtitle" value="One unified API schema — swap modelId without changing application code"
-          style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#6B7280;"
-          vertex="1" parent="1">
-          <mxGeometry x="80" y="56" width="1040" height="24" as="geometry" />
+        <mxCell id="subtitle" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;fontSize=12;fontColor=#6B7280;" value="One unified API schema — swap modelId without changing application code" vertex="1">
+          <mxGeometry height="24" width="1040" x="80" y="56" as="geometry" />
         </mxCell>
-
-        <!-- ── CLIENT ─────────────────────────────────────────────── -->
-        <mxCell id="client" value="&lt;b&gt;Client&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;browser / API consumer&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#9CA3AF;fontColor=#111827;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="40" y="185" width="130" height="60" as="geometry" />
+        <mxCell id="client" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#9CA3AF;fontColor=#111827;fontSize=11;arcSize=15;" value="&lt;b&gt;Client&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;browser / API consumer&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="130" x="51" y="185" as="geometry" />
         </mxCell>
-
-        <!-- ── API GATEWAY ─────────────────────────────────────────── -->
-        <mxCell id="apigw" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;REST · X-Ray tracing&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF9900;strokeColor=#E68900;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="245" y="185" width="145" height="60" as="geometry" />
+        <mxCell id="apigw" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF9900;strokeColor=#E68900;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;b&gt;API Gateway&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;REST · X-Ray tracing&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="145" x="245" y="185" as="geometry" />
         </mxCell>
-
-        <!-- ── VPC (dashed container) ─────────────────────────────── -->
-        <mxCell id="vpc" value="VPC"
-          style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EBF5FF;strokeColor=#147EBA;fontColor=#147EBA;dashed=1;dashPattern=8 4;verticalAlign=top;align=right;spacingTop=6;spacingRight=8;fontSize=11;fontStyle=1;"
-          vertex="1" parent="1">
-          <mxGeometry x="445" y="148" width="190" height="140" as="geometry" />
+        <mxCell id="vpc" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#EBF5FF;strokeColor=#147EBA;fontColor=#147EBA;dashed=1;dashPattern=8 4;verticalAlign=top;align=right;spacingTop=6;spacingRight=8;fontSize=11;fontStyle=1;" value="VPC" vertex="1">
+          <mxGeometry height="140" width="190" x="445" y="148" as="geometry" />
         </mxCell>
-
-        <!-- ── LAMBDA ──────────────────────────────────────────────── -->
-        <mxCell id="lambda" value="&lt;b&gt;Lambda&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;FastAPI · Mangum · ARM64&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF9900;strokeColor=#E68900;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="465" y="185" width="150" height="60" as="geometry" />
+        <mxCell id="lambda" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FF9900;strokeColor=#E68900;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;b&gt;Lambda&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;FastAPI · Mangum · ARM64&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="150" x="465" y="185" as="geometry" />
         </mxCell>
-
-        <!-- ── BEDROCK CONVERSE API ────────────────────────────────── -->
-        <mxCell id="bedrock" value="&lt;b&gt;Bedrock Converse API&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;unified inference interface&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2332;strokeColor=#0D1520;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="700" y="178" width="160" height="74" as="geometry" />
+        <mxCell id="bedrock" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1A2332;strokeColor=#0D1520;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;font style=&quot;color: rgb(255, 255, 255);&quot;&gt;&lt;font style=&quot;&quot;&gt;&lt;b style=&quot;&quot;&gt;Bedrock Converse API&lt;/b&gt;&lt;br&gt;&lt;/font&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;unified inference interface&lt;/font&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="74" width="160" x="700" y="178" as="geometry" />
         </mxCell>
-
-        <!-- ── CLAUDE OPUS 4.8 ─────────────────────────────────────── -->
-        <mxCell id="opus" value="&lt;b&gt;Claude Opus 4.8&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;reasoning · coding · analysis&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4F46E5;strokeColor=#4338CA;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="940" y="155" width="195" height="60" as="geometry" />
+        <mxCell id="opus" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#4F46E5;strokeColor=#4338CA;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;b&gt;Claude Opus 4.8&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;reasoning · coding · analysis&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="195" x="940" y="155" as="geometry" />
         </mxCell>
-
-        <!-- ── CLAUDE HAIKU 4.5 ────────────────────────────────────── -->
-        <mxCell id="haiku" value="&lt;b&gt;Claude Haiku 4.5&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;summarization · classification&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#7C3AED;strokeColor=#6D28D9;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="940" y="270" width="195" height="60" as="geometry" />
+        <mxCell id="haiku" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#7C3AED;strokeColor=#6D28D9;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;b&gt;Claude Haiku 4.5&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;summarization · classification&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="195" x="940" y="270" as="geometry" />
         </mxCell>
-
-        <!-- ── ROUTING LEGEND ──────────────────────────────────────── -->
-        <mxCell id="routing_legend" value="&lt;b&gt;task_type routing&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;reasoning / coding / analysis → Opus&lt;br/&gt;summarization / classification → Haiku&lt;br/&gt;default → Opus (env var: PRIMARY_MODEL_ID)&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#D97706;fontColor=#78350F;fontSize=11;align=left;spacingLeft=10;arcSize=8;"
-          vertex="1" parent="1">
-          <mxGeometry x="700" y="335" width="260" height="72" as="geometry" />
+        <mxCell id="routing_legend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#D97706;fontColor=#78350F;fontSize=11;align=left;spacingLeft=10;arcSize=8;" value="&lt;b&gt;task_type routing&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;reasoning / coding / analysis → Opus&lt;br/&gt;summarization / classification → Haiku&lt;br/&gt;default → Opus (env var: PRIMARY_MODEL_ID)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="72" width="260" x="700" y="335" as="geometry" />
         </mxCell>
-
-        <!-- ── CLOUDWATCH ──────────────────────────────────────────── -->
-        <mxCell id="cw" value="&lt;b&gt;CloudWatch&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Logs · Custom Metrics&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E7157B;strokeColor=#C0125A;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="355" y="420" width="150" height="55" as="geometry" />
+        <mxCell id="cw" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E7157B;strokeColor=#C0125A;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;b&gt;CloudWatch&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;Logs · Custom Metrics&lt;/font&gt;" vertex="1">
+          <mxGeometry height="55" width="150" x="355" y="420" as="geometry" />
         </mxCell>
-
-        <!-- ── X-RAY ───────────────────────────────────────────────── -->
-        <mxCell id="xray" value="&lt;b&gt;X-Ray&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;distributed tracing&lt;/font&gt;"
-          style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E7157B;strokeColor=#C0125A;fontColor=#ffffff;fontSize=11;arcSize=15;"
-          vertex="1" parent="1">
-          <mxGeometry x="525" y="420" width="150" height="55" as="geometry" />
+        <mxCell id="xray" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E7157B;strokeColor=#C0125A;fontColor=#ffffff;fontSize=11;arcSize=15;" value="&lt;b&gt;X-Ray&lt;/b&gt;&lt;br/&gt;&lt;font style=&quot;font-size:10px;&quot;&gt;distributed tracing&lt;/font&gt;" vertex="1">
+          <mxGeometry height="55" width="150" x="525" y="420" as="geometry" />
         </mxCell>
-
-        <!-- ── EDGES ───────────────────────────────────────────────── -->
-
-        <!-- Client → API Gateway -->
-        <mxCell id="e1" value="HTTPS"
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6B7280;fontColor=#6B7280;fontSize=10;"
-          edge="1" source="client" target="apigw" parent="1">
+        <mxCell id="e1" edge="1" parent="1" source="client" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6B7280;fontColor=#6B7280;fontSize=10;" target="apigw" value="HTTPS">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- API Gateway → Lambda -->
-        <mxCell id="e2" value=""
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6B7280;"
-          edge="1" source="apigw" target="lambda" parent="1">
+        <mxCell id="e2" edge="1" parent="1" source="apigw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6B7280;" target="lambda" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Lambda → Bedrock Converse -->
-        <mxCell id="e3" value=""
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6B7280;"
-          edge="1" source="lambda" target="bedrock" parent="1">
+        <mxCell id="e3" edge="1" parent="1" source="lambda" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#6B7280;" target="bedrock" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Bedrock → Opus (primary, solid purple) -->
-        <mxCell id="e4" value="primary"
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4F46E5;fontColor=#4F46E5;fontSize=10;fontStyle=1;"
-          edge="1" source="bedrock" target="opus" parent="1">
+        <mxCell id="e4" edge="1" parent="1" source="bedrock" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#4F46E5;fontColor=#4F46E5;fontSize=10;fontStyle=1;" target="opus" value="primary">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Bedrock → Haiku (fallback, dashed) -->
-        <mxCell id="e5" value="fallback"
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7C3AED;fontColor=#7C3AED;fontSize=10;dashed=1;dashPattern=6 3;"
-          edge="1" source="bedrock" target="haiku" parent="1">
+        <mxCell id="e5" edge="1" parent="1" source="bedrock" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#7C3AED;fontColor=#7C3AED;fontSize=10;dashed=1;dashPattern=6 3;" target="haiku" value="fallback">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Lambda → CloudWatch (dashed, pink) -->
-        <mxCell id="e6" value="logs + metrics"
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E7157B;fontColor=#E7157B;fontSize=9;dashed=1;dashPattern=4 3;exitX=0.3;exitY=1;exitDx=0;exitDy=0;"
-          edge="1" source="lambda" target="cw" parent="1">
+        <mxCell id="e6" edge="1" parent="1" source="lambda" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E7157B;fontColor=#E7157B;fontSize=9;dashed=1;dashPattern=4 3;exitX=0.3;exitY=1;exitDx=0;exitDy=0;" target="cw" value="logs + metrics">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
-        <!-- Lambda → X-Ray (dashed, pink) -->
-        <mxCell id="e7" value="traces"
-          style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E7157B;fontColor=#E7157B;fontSize=9;dashed=1;dashPattern=4 3;exitX=0.7;exitY=1;exitDx=0;exitDy=0;"
-          edge="1" source="lambda" target="xray" parent="1">
+        <mxCell id="e7" edge="1" parent="1" source="lambda" style="edgeStyle=orthogonalEdgeStyle;rounded=0;strokeColor=#E7157B;fontColor=#E7157B;fontSize=9;dashed=1;dashPattern=4 3;exitX=0.7;exitY=1;exitDx=0;exitDy=0;" target="xray" value="traces">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-
       </root>
     </mxGraphModel>
   </diagram>

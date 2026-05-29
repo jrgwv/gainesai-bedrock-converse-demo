@@ -225,6 +225,12 @@ infra/coverage/
 
 # macOS
 .DS_Store
+._*
+*.bkp
+
+# Blog authoring formats (source of truth is hashnode-post.md)
+blog/*.docx
+blog/*.pages
 
 # Secrets
 *.pem
