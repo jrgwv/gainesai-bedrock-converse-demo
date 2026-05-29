@@ -216,3 +216,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# CDK / Node
+infra/node_modules/
+infra/cdk.out/
+infra/dist/
+infra/coverage/
+
+# macOS
+.DS_Store
+
+# Secrets
+*.pem
+.env.local

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bedrock Converse Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Bedrock Converse Demo</h1>
+      <p>Multi-model inference via the AWS Bedrock Converse API</p>
+    </header>
+
+    <main>
+      <div class="config-row">
+        <label for="api-url">API URL</label>
+        <input id="api-url" type="text" value="http://localhost:8000" />
+      </div>
+
+      <div class="config-row">
+        <label for="task-type">Task Type <span class="hint">(determines model routing)</span></label>
+        <select id="task-type">
+          <option value="default">default → claude-opus-4-8</option>
+          <option value="reasoning">reasoning → claude-opus-4-8</option>
+          <option value="coding">coding → claude-opus-4-8</option>
+          <option value="analysis">analysis → claude-opus-4-8</option>
+          <option value="summarization">summarization → claude-haiku-4-5</option>
+          <option value="classification">classification → claude-haiku-4-5</option>
+        </select>
+      </div>
+
+      <div class="config-row">
+        <label for="system-prompt">System Prompt <span class="hint">(optional)</span></label>
+        <textarea id="system-prompt" rows="2" placeholder="You are a helpful assistant..."></textarea>
+      </div>
+
+      <div class="config-row">
+        <label for="message">Message <span class="hint">(Cmd+Enter to send)</span></label>
+        <textarea id="message" rows="5" placeholder="Enter your message..."></textarea>
+      </div>
+
+      <button id="send-btn" onclick="sendMessage()">Send</button>
+
+      <div id="response-area" class="hidden">
+        <h2>Response</h2>
+        <div id="response-content" class="response-text"></div>
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="label">Model</span>
+            <span id="model-id">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Tokens In</span>
+            <span id="tokens-in">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Tokens Out</span>
+            <span id="tokens-out">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Latency</span>
+            <span id="latency">—</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">Fallback Used</span>
+            <span id="fallback">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="error-area" class="hidden error"></div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

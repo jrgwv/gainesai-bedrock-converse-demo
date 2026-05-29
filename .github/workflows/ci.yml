@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+jobs:
+  python:
+    name: Python lint + test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: ruff format check
+        run: uv run ruff format --check src/ tests/
+
+      - name: ruff lint
+        run: uv run ruff check src/ tests/
+
+      - name: mypy
+        run: uv run mypy src/
+
+      - name: bandit
+        run: uv run bandit -r src/ -ll -q
+
+      - name: pip-audit
+        run: uv run pip-audit
+
+      - name: semgrep
+        run: uv run semgrep --config=auto src/ --error
+
+      - name: pytest
+        run: uv run pytest
+
+  infra:
+    name: CDK lint + synth + test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Prettier check
+        run: npx prettier --check '**/*.ts'
+
+      - name: ESLint
+        run: npx eslint . --ext .ts --max-warnings 0
+
+      - name: CDK synth
+        run: npm run cdk:synth
+
+      - name: npm audit
+        run: npm audit --audit-level=moderate
+
+      - name: Jest
+        run: npm test -- --coverage
