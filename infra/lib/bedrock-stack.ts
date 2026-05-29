@@ -74,7 +74,7 @@ export class BedrockStack extends cdk.Stack {
           `arn:aws:bedrock:*::foundation-model/${primaryModel}`,
           `arn:aws:bedrock:*::foundation-model/${fallbackModel}`,
         ],
-      })
+      }),
     );
 
     // cloudwatch:PutMetricData does not support resource-level restrictions,
@@ -89,7 +89,7 @@ export class BedrockStack extends cdk.Stack {
             "cloudwatch:namespace": "gainsAI/BedrockConverse",
           },
         },
-      })
+      }),
     );
 
     const api = new apigw.RestApi(this, "ConverseApi", {
@@ -154,7 +154,7 @@ export class BedrockStack extends cdk.Stack {
           ],
         },
       ],
-      true
+      true,
     );
 
     // API Gateway's CloudWatch role uses the AWS-managed
@@ -173,7 +173,7 @@ export class BedrockStack extends cdk.Stack {
             "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs",
           ],
         },
-      ]
+      ],
     );
 
     // Python 3.13 is the latest Lambda runtime available; cdk-nag's runtime
@@ -212,7 +212,7 @@ export class BedrockStack extends cdk.Stack {
             "see AwsSolutions-APIG4 suppression for the production plan.",
         },
       ],
-      true
+      true,
     );
 
     new cdk.CfnOutput(this, "ApiUrl", {

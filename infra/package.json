@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint .",
     "format:check": "prettier --check '**/*.ts'",
     "test": "jest --coverage",
     "cdk:synth": "cdk synth",

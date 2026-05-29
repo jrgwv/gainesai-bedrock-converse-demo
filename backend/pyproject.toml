@@ -38,6 +38,12 @@ ignore = ["S101"]
 python_version = "3.13"
 strict = true
 ignore_missing_imports = false
+mypy_path = "src"
+explicit_package_bases = true
+
+[[tool.mypy.overrides]]
+module = ["boto3.*", "botocore.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

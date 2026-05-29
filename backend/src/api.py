@@ -4,6 +4,7 @@ Exposes a single /converse endpoint that wraps BedrockConverseClient.
 """
 
 import logging
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -19,7 +20,7 @@ client: BedrockConverseClient
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     global client
     client = BedrockConverseClient(region=settings.aws_region)
     client.add_observer(log_event)
@@ -88,7 +89,7 @@ def converse(payload: ConversePayload) -> ConverseResult:
 
 
 @app.get("/health")
-def health():
+def health() -> dict[str, str]:
     return {"status": "ok"}
 
 

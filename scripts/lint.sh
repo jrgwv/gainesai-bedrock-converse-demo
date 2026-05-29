@@ -18,6 +18,6 @@ echo "==> [infra] prettier"
 (cd "$REPO_ROOT/infra" && npx prettier --check '**/*.ts')
 
 echo "==> [infra] eslint"
-(cd "$REPO_ROOT/infra" && npx eslint . --ext .ts --max-warnings 0)
+(cd "$REPO_ROOT/infra" && npx eslint . --max-warnings 0)
 
 echo "All lint checks passed."

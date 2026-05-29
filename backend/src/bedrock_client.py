@@ -8,6 +8,7 @@ import time
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
@@ -111,7 +112,7 @@ class BedrockConverseClient:
         request: ConverseRequest,
         request_id: str,
     ) -> ConverseResponse:
-        kwargs: dict = {
+        kwargs: dict[str, Any] = {
             "modelId": model_id,
             "messages": [
                 {
@@ -148,7 +149,7 @@ class BedrockConverseClient:
             latency_ms=latency_ms,
         )
 
-    def _emit(self, request: ConverseRequest, response: ConverseResponse):
+    def _emit(self, request: ConverseRequest, response: ConverseResponse) -> None:
         event = ObservabilityEvent(
             request_id=response.request_id,
             model_id=response.model_id,
