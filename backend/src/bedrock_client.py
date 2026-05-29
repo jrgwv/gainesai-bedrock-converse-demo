@@ -36,6 +36,19 @@ ROUTING_TABLE: dict[str, str] = {
 
 LATENCY_THRESHOLD_MS = settings.latency_threshold_ms
 
+# Reasoning-class models (e.g. Opus 4.x) have deprecated the temperature
+# inference parameter and return ValidationException for any request that
+# includes it. Add new model-family substrings here as Anthropic releases
+# more reasoning models that follow the same convention. Substring match is
+# intentional so the entry covers both the cross-region inference-profile ID
+# (us.anthropic.claude-opus-4-8) and the foundation-model variant
+# (anthropic.claude-opus-4-8-v1:0).
+MODELS_WITHOUT_TEMPERATURE: tuple[str, ...] = ("claude-opus-4-8",)
+
+
+def _model_supports_temperature(model_id: str) -> bool:
+    return not any(family in model_id for family in MODELS_WITHOUT_TEMPERATURE)
+
 
 @dataclass
 class Message:
@@ -112,6 +125,10 @@ class BedrockConverseClient:
         request: ConverseRequest,
         request_id: str,
     ) -> ConverseResponse:
+        inference_config: dict[str, Any] = {"maxTokens": request.max_tokens}
+        if _model_supports_temperature(model_id):
+            inference_config["temperature"] = request.temperature
+
         kwargs: dict[str, Any] = {
             "modelId": model_id,
             "messages": [
@@ -121,10 +138,7 @@ class BedrockConverseClient:
                 }
                 for m in request.messages
             ],
-            "inferenceConfig": {
-                "maxTokens": request.max_tokens,
-                "temperature": request.temperature,
-            },
+            "inferenceConfig": inference_config,
         }
 
         if request.system_prompt:

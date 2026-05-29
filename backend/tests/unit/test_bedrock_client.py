@@ -95,3 +95,31 @@ def test_token_counts_returned(client):
     resp = c.converse(req)
     assert resp.input_tokens == 42
     assert resp.output_tokens == 99
+
+
+def test_temperature_omitted_for_reasoning_model(client):
+    """Opus 4.x rejects temperature; the client must not include it for those models."""
+    c, mock_boto = client
+    mock_boto.converse.return_value = _bedrock_response()
+    req = ConverseRequest(
+        messages=[Message(role="user", content="explain")],
+        task_type="reasoning",
+        temperature=0.7,
+    )
+    c.converse(req)
+    inference = mock_boto.converse.call_args.kwargs["inferenceConfig"]
+    assert "temperature" not in inference
+    assert inference["maxTokens"] == req.max_tokens
+
+
+def test_temperature_included_for_non_reasoning_model(client):
+    c, mock_boto = client
+    mock_boto.converse.return_value = _bedrock_response()
+    req = ConverseRequest(
+        messages=[Message(role="user", content="summarize")],
+        task_type="summarization",
+        temperature=0.3,
+    )
+    c.converse(req)
+    inference = mock_boto.converse.call_args.kwargs["inferenceConfig"]
+    assert inference["temperature"] == 0.3
