@@ -10,8 +10,17 @@ import {
 import { Construct } from "constructs";
 import { AwsSolutionsChecks, NagSuppressions } from "cdk-nag";
 
+export interface BedrockStackProps extends cdk.StackProps {
+  /**
+   * ID of an existing VPC to deploy the Lambda into. If omitted, the stack
+   * provisions a new VPC with NAT gateways and CloudWatch flow logs.
+   * Can also be supplied at the CLI via `cdk deploy --context vpcId=vpc-xxx`.
+   */
+  readonly existingVpcId?: string;
+}
+
 export class BedrockStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: BedrockStackProps) {
     super(scope, id, props);
 
     cdk.Aspects.of(this).add(new AwsSolutionsChecks({ verbose: true }));
@@ -23,21 +32,33 @@ export class BedrockStack extends cdk.Stack {
     cdk.Tags.of(this).add("Env", env);
     cdk.Tags.of(this).add("Owner", "gainsAI");
 
-    const vpcFlowLogGroup = new logs.LogGroup(this, "VpcFlowLogs", {
-      retention: logs.RetentionDays.ONE_YEAR,
-      removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
-    });
+    const existingVpcId =
+      props?.existingVpcId ??
+      (this.node.tryGetContext("vpcId") as string | undefined);
 
-    const vpc = new ec2.Vpc(this, "Vpc", {
-      maxAzs: 2,
-      natGateways: isProd ? 2 : 1,
-      flowLogs: {
-        ToCloudWatch: {
-          destination: ec2.FlowLogDestination.toCloudWatchLogs(vpcFlowLogGroup),
-          trafficType: ec2.FlowLogTrafficType.ALL,
+    let vpc: ec2.IVpc;
+    if (existingVpcId) {
+      // Vpc.fromLookup runs at synth time, reads from cdk.context.json after
+      // the first successful synth, and requires the stack to have an env.
+      vpc = ec2.Vpc.fromLookup(this, "Vpc", { vpcId: existingVpcId });
+    } else {
+      const vpcFlowLogGroup = new logs.LogGroup(this, "VpcFlowLogs", {
+        retention: logs.RetentionDays.ONE_YEAR,
+        removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
+      });
+
+      vpc = new ec2.Vpc(this, "Vpc", {
+        maxAzs: 2,
+        natGateways: isProd ? 2 : 1,
+        flowLogs: {
+          ToCloudWatch: {
+            destination:
+              ec2.FlowLogDestination.toCloudWatchLogs(vpcFlowLogGroup),
+            trafficType: ec2.FlowLogTrafficType.ALL,
+          },
         },
-      },
-    });
+      });
+    }
 
     const apiLogGroup = new logs.LogGroup(this, "ApiLogs", {
       retention: logs.RetentionDays.ONE_YEAR,
@@ -218,6 +239,12 @@ export class BedrockStack extends cdk.Stack {
     new cdk.CfnOutput(this, "ApiUrl", {
       value: api.url,
       description: "Bedrock Converse API URL",
+    });
+
+    new cdk.CfnOutput(this, "VpcSource", {
+      value: existingVpcId ? `imported:${existingVpcId}` : "created",
+      description:
+        "Whether the Lambda runs in an imported VPC or one provisioned by this stack",
     });
   }
 }

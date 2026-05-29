@@ -65,4 +65,68 @@ describe("BedrockStack", () => {
       },
     });
   });
+
+  describe("with existingVpcId", () => {
+    const account = "123456789012";
+    const region = "us-east-1";
+    const vpcId = "vpc-12345";
+    const lookupKey = `vpc-provider:account=${account}:filter.vpc-id=${vpcId}:region=${region}:returnAsymmetricSubnets=true`;
+    const lookupResult = {
+      vpcId,
+      vpcCidrBlock: "10.0.0.0/16",
+      availabilityZones: [],
+      subnetGroups: [
+        {
+          name: "Private",
+          type: "Private",
+          subnets: [
+            {
+              subnetId: "subnet-aaa",
+              cidr: "10.0.1.0/24",
+              availabilityZone: "us-east-1a",
+              routeTableId: "rtb-aaa",
+            },
+            {
+              subnetId: "subnet-bbb",
+              cidr: "10.0.2.0/24",
+              availabilityZone: "us-east-1b",
+              routeTableId: "rtb-bbb",
+            },
+          ],
+        },
+      ],
+    };
+
+    let importedTpl: Template;
+
+    beforeEach(() => {
+      const app = new cdk.App({
+        context: {
+          env: "test",
+          [lookupKey]: lookupResult,
+        },
+      });
+      const stack = new BedrockStack(app, "ImportedVpcStack", {
+        env: { account, region },
+        existingVpcId: vpcId,
+      });
+      importedTpl = Template.fromStack(stack);
+    });
+
+    test("does not create a new VPC", () => {
+      importedTpl.resourceCountIs("AWS::EC2::VPC", 0);
+    });
+
+    test("does not create VPC flow logs", () => {
+      importedTpl.resourceCountIs("AWS::EC2::FlowLog", 0);
+    });
+
+    test("places Lambda in the imported subnets", () => {
+      importedTpl.hasResourceProperties("AWS::Lambda::Function", {
+        VpcConfig: Match.objectLike({
+          SubnetIds: Match.arrayWith(["subnet-aaa", "subnet-bbb"]),
+        }),
+      });
+    });
+  });
 });
