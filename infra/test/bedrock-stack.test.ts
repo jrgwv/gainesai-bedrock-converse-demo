@@ -13,10 +13,10 @@ describe("BedrockStack", () => {
     template = Template.fromStack(stack);
   });
 
-  test("creates Lambda with ARM64 architecture and X-Ray tracing", () => {
+  test("creates container Lambda with ARM64 architecture and X-Ray tracing", () => {
     template.hasResourceProperties("AWS::Lambda::Function", {
       Architectures: ["arm64"],
-      Runtime: "python3.13",
+      PackageType: "Image",
       TracingConfig: { Mode: "Active" },
     });
   });
@@ -63,6 +63,25 @@ describe("BedrockStack", () => {
           }),
         ]),
       },
+    });
+  });
+
+  test("Lambda timeout is 30 seconds", () => {
+    template.hasResourceProperties("AWS::Lambda::Function", {
+      Timeout: 30,
+    });
+  });
+
+  test("provisions Bedrock runtime + control-plane interface endpoints", () => {
+    template.hasResourceProperties("AWS::EC2::VPCEndpoint", {
+      VpcEndpointType: "Interface",
+      ServiceName: Match.stringLikeRegexp("\\.bedrock-runtime$"),
+      PrivateDnsEnabled: true,
+    });
+    template.hasResourceProperties("AWS::EC2::VPCEndpoint", {
+      VpcEndpointType: "Interface",
+      ServiceName: Match.stringLikeRegexp("\\.bedrock$"),
+      PrivateDnsEnabled: true,
     });
   });
 
@@ -127,6 +146,10 @@ describe("BedrockStack", () => {
           SubnetIds: Match.arrayWith(["subnet-aaa", "subnet-bbb"]),
         }),
       });
+    });
+
+    test("does not provision Bedrock endpoints (owner-managed)", () => {
+      importedTpl.resourceCountIs("AWS::EC2::VPCEndpoint", 0);
     });
   });
 });

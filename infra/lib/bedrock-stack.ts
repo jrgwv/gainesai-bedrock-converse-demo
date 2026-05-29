@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import {
   aws_apigateway as apigw,
   aws_ec2 as ec2,
+  aws_ecr_assets as ecrAssets,
   aws_iam as iam,
   aws_lambda as lambda,
   aws_logs as logs,
@@ -58,6 +59,40 @@ export class BedrockStack extends cdk.Stack {
           },
         },
       });
+
+      // Interface endpoints so the Lambda reaches Bedrock over PrivateLink
+      // instead of egressing through NAT to the public Bedrock endpoints.
+      // Lower latency, lower data-transfer cost, traffic stays on the AWS
+      // backbone. Owner-of-VPC-imports must provision these themselves.
+      vpc.addInterfaceEndpoint("BedrockRuntimeEndpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.BEDROCK_RUNTIME,
+        privateDnsEnabled: true,
+      });
+      vpc.addInterfaceEndpoint("BedrockEndpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.BEDROCK,
+        privateDnsEnabled: true,
+      });
+
+      // cdk-nag's EC23 cannot statically validate the endpoint security
+      // groups because their 443-from-VPC-CIDR ingress references the VPC
+      // CIDR via Fn::GetAtt. The constructed ingress is already restricted
+      // to the VPC CIDR, which is what EC23 is intended to enforce.
+      NagSuppressions.addResourceSuppressionsByPath(
+        this,
+        [
+          `/${this.stackName}/Vpc/BedrockRuntimeEndpoint/SecurityGroup/Resource`,
+          `/${this.stackName}/Vpc/BedrockEndpoint/SecurityGroup/Resource`,
+        ],
+        [
+          {
+            id: "CdkNagValidationFailure",
+            reason:
+              "EC23 rule cannot statically evaluate the SG ingress because " +
+              "it references the VPC CIDR via Fn::GetAtt. The ingress is " +
+              "correctly scoped to the VPC CIDR by addInterfaceEndpoint.",
+          },
+        ],
+      );
     }
 
     const apiLogGroup = new logs.LogGroup(this, "ApiLogs", {
@@ -65,15 +100,22 @@ export class BedrockStack extends cdk.Stack {
       removalPolicy: isProd ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
     });
 
-    const fn = new lambda.Function(this, "ConverseFunction", {
-      runtime: lambda.Runtime.PYTHON_3_13,
+    // Container-image Lambda built from backend/Dockerfile — bundles fastapi,
+    // mangum, pydantic, etc. alongside src/. Previous zip-asset packaging
+    // shipped only src/ which left the runtime without any third-party deps.
+    const fn = new lambda.DockerImageFunction(this, "ConverseFunction", {
+      code: lambda.DockerImageCode.fromImageAsset("../backend", {
+        platform: ecrAssets.Platform.LINUX_ARM64,
+      }),
       architecture: lambda.Architecture.ARM_64,
-      handler: "api.handler",
-      code: lambda.Code.fromAsset("../backend/src"),
       vpc,
       tracing: lambda.Tracing.ACTIVE,
       reservedConcurrentExecutions: isProd ? 100 : 10,
       logGroup: apiLogGroup,
+      // Bedrock Converse calls regularly exceed the default 3 s; allow up to
+      // 30 s before timeout. API Gateway integration timeout is 29 s, so
+      // anything past that returns 504 at the API layer anyway.
+      timeout: cdk.Duration.seconds(30),
       environment: {
         LOG_LEVEL: isProd ? "WARNING" : "DEBUG",
       },
@@ -196,16 +238,6 @@ export class BedrockStack extends cdk.Stack {
         },
       ],
     );
-
-    // Python 3.13 is the latest Lambda runtime available; cdk-nag's runtime
-    // catalogue can lag behind AWS announcements.
-    NagSuppressions.addResourceSuppressions(fn, [
-      {
-        id: "AwsSolutions-L1",
-        reason:
-          "Lambda is already pinned to Python 3.13, the latest available runtime.",
-      },
-    ]);
 
     // WAF and authentication are deferred to the deployment layer for this
     // demo. Production deployments are expected to front the API with WAFv2
