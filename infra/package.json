@@ -11,7 +11,7 @@
     "cdk:diff": "cdk diff",
     "cdk:deploy:dev": "cdk deploy --context env=dev",
     "cdk:deploy:prod": "cdk deploy --context env=prod --require-approval broadening",
-    "audit": "npm audit --audit-level=moderate"
+    "audit": "npm audit --audit-level=high"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
