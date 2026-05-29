@@ -1,14 +1,16 @@
 """Unit tests for BedrockConverseClient."""
-import pytest
+
 from unittest.mock import MagicMock
+
+import pytest
 from botocore.exceptions import ClientError
 
 from bedrock_client import (
+    MODEL_FALLBACK,
+    MODEL_PRIMARY,
     BedrockConverseClient,
     ConverseRequest,
     Message,
-    MODEL_PRIMARY,
-    MODEL_FALLBACK,
 )
 
 

@@ -5,8 +5,9 @@ Register `log_event` and/or `emit_cloudwatch_metrics` as observers on BedrockCon
 
 import json
 import logging
+from datetime import UTC, datetime
+
 import boto3
-from datetime import datetime, timezone
 
 from bedrock_client import ObservabilityEvent
 
@@ -18,7 +19,7 @@ NAMESPACE = "gainsAI/BedrockConverse"
 def log_event(event: ObservabilityEvent) -> None:
     """Emit a structured JSON log line (CloudWatch Logs Insights friendly)."""
     record = {
-        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "request_id": event.request_id,
         "model_id": event.model_id,
         "task_type": event.task_type,

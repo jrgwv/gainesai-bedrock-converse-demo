@@ -2,7 +2,9 @@
 Integration tests — require real AWS credentials with bedrock:InvokeModel permission.
 Skipped unless RUN_INTEGRATION_TESTS=1 is set. Run only in develop/main CI pipelines.
 """
+
 import os
+
 import pytest
 
 from bedrock_client import BedrockConverseClient, ConverseRequest, Message

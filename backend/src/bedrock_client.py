@@ -3,12 +3,11 @@ Thin wrapper around the Bedrock Converse API.
 Handles retries, fallback model, and emits structured observability events.
 """
 
+import logging
 import time
 import uuid
-import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Optional
 
 import boto3
 from botocore.exceptions import ClientError
@@ -26,12 +25,12 @@ MODEL_FALLBACK = settings.fallback_model_id
 
 # Task complexity → model routing table
 ROUTING_TABLE: dict[str, str] = {
-    "reasoning":      MODEL_PRIMARY,
-    "coding":         MODEL_PRIMARY,
-    "analysis":       MODEL_PRIMARY,
-    "summarization":  MODEL_FALLBACK,
+    "reasoning": MODEL_PRIMARY,
+    "coding": MODEL_PRIMARY,
+    "analysis": MODEL_PRIMARY,
+    "summarization": MODEL_FALLBACK,
     "classification": MODEL_FALLBACK,
-    "default":        MODEL_PRIMARY,
+    "default": MODEL_PRIMARY,
 }
 
 LATENCY_THRESHOLD_MS = settings.latency_threshold_ms
@@ -39,7 +38,7 @@ LATENCY_THRESHOLD_MS = settings.latency_threshold_ms
 
 @dataclass
 class Message:
-    role: str       # "user" | "assistant"
+    role: str  # "user" | "assistant"
     content: str
 
 
@@ -49,7 +48,7 @@ class ConverseRequest:
     task_type: str = "default"
     max_tokens: int = 4096
     temperature: float = 0.7
-    system_prompt: Optional[str] = None
+    system_prompt: str | None = None
 
 
 @dataclass
@@ -72,7 +71,7 @@ class ObservabilityEvent:
     output_tokens: int
     latency_ms: float
     fallback_used: bool
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class BedrockConverseClient:
@@ -96,7 +95,9 @@ class BedrockConverseClient:
         except (ClientError, TimeoutError) as primary_err:
             logger.warning(
                 "Primary model %s failed (%s), falling back to %s",
-                model_id, primary_err, MODEL_FALLBACK,
+                model_id,
+                primary_err,
+                MODEL_FALLBACK,
             )
             response = self._call(MODEL_FALLBACK, request, request_id)
             response.fallback_used = True

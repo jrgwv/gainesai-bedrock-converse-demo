@@ -5,7 +5,6 @@ Exposes a single /converse endpoint that wraps BedrockConverseClient.
 
 import logging
 from contextlib import asynccontextmanager
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
@@ -45,7 +44,7 @@ class ConversePayload(BaseModel):
     task_type: str = "default"
     max_tokens: int = Field(default=4096, ge=1, le=8192)
     temperature: float = Field(default=0.7, ge=0.0, le=1.0)
-    system_prompt: Optional[str] = None
+    system_prompt: str | None = None
 
 
 class ConverseResult(BaseModel):
@@ -95,6 +94,7 @@ def health():
 
 try:
     from mangum import Mangum
+
     handler = Mangum(app, lifespan="on")
 except ImportError:
     pass

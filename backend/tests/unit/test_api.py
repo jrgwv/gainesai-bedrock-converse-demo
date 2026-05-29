@@ -1,10 +1,12 @@
 """Unit tests for the FastAPI application."""
-import pytest
+
 from unittest.mock import MagicMock
+
+import pytest
 from fastapi.testclient import TestClient
 
-from bedrock_client import ConverseResponse
 import api as api_module
+from bedrock_client import ConverseResponse
 
 
 @pytest.fixture(autouse=True)
