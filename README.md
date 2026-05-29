@@ -87,3 +87,31 @@ configuration; only networking is left to the VPC owner.
 ```
 
 See `CLAUDE.md` for branch strategy, full tooling versions, and CI details.
+
+## Troubleshooting
+
+### Podman drops the ECR push partway through
+
+Symptom: `cdk deploy` reports a network error or hang while publishing
+the Lambda container image to ECR, somewhere around the multi-hundred-MB
+mark. Re-running `cdk deploy` succeeds, sometimes after 2–3 attempts.
+
+Cause: a known issue with Podman's ECR push path where its HTTP/2 → HTTP/1
+fallback fails on long-running uploads against ECR. The image is partially
+uploaded; the next `cdk deploy` resumes from the last successfully pushed
+layer, so retries make progress each time.
+
+Workarounds, best to worst:
+1. Use Docker Desktop or `colima` (Docker-compatible) locally — no connection-drop issue.
+2. Run the deploy from CI (GitHub Actions runners use Docker by default).
+3. Re-run `cdk deploy` 2–3 times until it succeeds (each retry pushes more layers).
+
+### Container image is large
+
+The runtime image is roughly 600 MB. About 480 MB of that is the
+`public.ecr.aws/lambda/python:3.13` base image, which is fixed. The
+Dockerfile strips `__pycache__/` and bundled `tests/` directories from
+installed dependencies, and `uvicorn[standard]` is held out as a dev-only
+dep (Lambda uses Mangum for ASGI bridging — uvicorn isn't imported at
+runtime). Further shrinkage is possible but requires pruning
+`botocore/data/` to only the services this Lambda uses, which is fragile.

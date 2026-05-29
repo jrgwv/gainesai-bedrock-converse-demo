@@ -7,13 +7,15 @@ dependencies = [
     "fastapi>=0.115",
     "pydantic>=2.11",
     "pydantic-settings>=2.4",
-    "uvicorn[standard]>=0.34",
     "mangum>=0.19",
     "structlog>=24.4",
 ]
 
 [project.optional-dependencies]
 dev = [
+    # Local-only ASGI server; Lambda uses Mangum, not uvicorn.
+    # Kept out of the container image to shave ~25 MB.
+    "uvicorn[standard]>=0.34",
     "pytest>=8.3",
     "pytest-cov>=6.1",
     "pytest-asyncio>=0.25",
